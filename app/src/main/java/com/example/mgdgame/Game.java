@@ -3,11 +3,14 @@ package com.example.mgdgame;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.gesture.Gesture;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Debug;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -19,13 +22,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Game extends SurfaceView implements SurfaceHolder.Callback {
+public class Game extends SurfaceView implements SurfaceHolder.Callback, GestureDetector.OnGestureListener {
 
     private final RectF DISPLAY_RECT;
     private final Player PLAYER;
@@ -41,6 +45,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private float mShakeCooldownTime                    = 0f; //this is the starting cooldown time
     private boolean mShake                              = false; //is able top shake
     private float mScore                                = 100;
+    private GestureDetectorCompat mGestureDetector;
 
     public float mYaw;
     public float mPitch;
@@ -55,6 +60,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         surfaceHolder.addCallback(this);
 
+        mGestureDetector = new GestureDetectorCompat(getContext(), this);
         final int VIRUS_ROWS                = 3;
         final int VIRUS_ROW_COUNT           = 10;
         final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
@@ -101,17 +107,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        switch (event.getAction()) {
-
-            case MotionEvent.ACTION_DOWN:
-                PLAYER.fire();
-                spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
-
-        }
-
+        mGestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
-
     }
 
     @Override
@@ -465,5 +462,38 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Looper.loop();
         endGame();
 
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+
+        spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
+        return false;
+
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+        spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
     }
 }

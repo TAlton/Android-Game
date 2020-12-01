@@ -1,62 +1,3 @@
-/*package com.example.mgdgame;
-
-        import android.app.Activity;
-        import android.content.Context;
-        import android.content.Intent;
-        import android.content.pm.ActivityInfo;
-        import android.graphics.Color;
-        import android.hardware.Sensor;
-        import android.hardware.SensorEvent;
-        import android.hardware.SensorEventListener;
-        import android.hardware.SensorManager;
-        import android.os.Bundle;
-        import android.view.View;
-
-        import java.util.Objects;
-
-//entryPoint
-public class GameActivity extends Activity {
-
-    private Game mGame;
-    private Gyroscope mGyroscope;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mGame = new Game(this);
-        setContentView(mGame);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        mGyroscope = new Gyroscope(this);
-
-        mGyroscope.SetListener(new Gyroscope.Listener() {
-            @Override
-            public void onRotation(float argRx, float argRy, float argRz) {
-                if(argRz > 1.0f) {
-                    mGame.mRoll = 1f;
-                } else if(argRz < -1.0f){
-                    mGame.mRoll = -1f;
-                }
-            }
-        });
-    }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mGyroscope.Register();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mGyroscope.Unregister();
-    }
-}
-
-*/
 package com.example.mgdgame;
 
         import android.app.Activity;
@@ -84,25 +25,19 @@ public class GameActivity extends Activity {
         setContentView(mGame);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        mAccelerometer.setListener(new Accelerometer.Listener() {
-            @Override
-            public void onRotation(float argRx, float argRy, float argRz) {
+        mAccelerometer.setListener((argRx, argRy, argRz) -> {
 
-                //Y rotation / the max value normalizes the range, and we multiply it to get whichever range we desire
-                mGame.getPlayer().setMoveSpeed((argRy / 9.81f) * ACCELEROMETER_OUTPUT_MULTIPLIER);
+            //Y rotation / the max value normalizes the range, and we multiply it to get whichever range we desire
+            mGame.getPlayer().setMoveSpeed((argRy / 9.81f) * ACCELEROMETER_OUTPUT_MULTIPLIER);
 
-            }
         });
 
-        mGyroscope.setListener(new Gyroscope.Listener() {
-            @Override
-            public void onRotation(float argRx, float argRy, float argRz) {
+        mGyroscope.setListener((argRx, argRy, argRz) -> {
 
-                float lsTotalMotion = Math.abs(argRx) + Math.abs(argRy) + Math.abs(argRz);
+            float lsTotalMotion = Math.abs(argRx) + Math.abs(argRy) + Math.abs(argRz);
 
-                if(lsTotalMotion >= GYROSCOPE_THRESHOLD) mGame.setShake(true);
+            if(lsTotalMotion >= GYROSCOPE_THRESHOLD) mGame.setShake(true);
 
-            }
         });
     }
     @Override
@@ -133,4 +68,5 @@ public class GameActivity extends Activity {
         super.onPause();
 
     }
+
 }
