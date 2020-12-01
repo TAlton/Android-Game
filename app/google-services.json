@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "583746087943",
+    "firebase_url": "https://mgd-project-13767.firebaseio.com",
+    "project_id": "mgd-project-13767",
+    "storage_bucket": "mgd-project-13767.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583746087943:android:4e91075f5b3a14b6894ea2",
+        "android_client_info": {
+          "package_name": "com.example.mgdgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583746087943-gfhmcpuralopgm0qnospa1dli3e56ubp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8jaiS1Ftc8wmGmiGDw6w5GBd62DZC9VA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583746087943-gfhmcpuralopgm0qnospa1dli3e56ubp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

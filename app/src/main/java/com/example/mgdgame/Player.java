@@ -44,10 +44,12 @@ public class Player extends DrawableEntity {
         updateRect();
 
     }
-    public void fire(){}
+    public void fire()                      {this.mCurrentAmmoCount = (mCurrentAmmoCount >= 1) ? mCurrentAmmoCount - 1 : 0;}
+    public void reload()                    {this.mCurrentAmmoCount = MAX_AMMO;}
     public void setMoveSpeed(float argF)    {this.mMoveSpeed = argF;}
     public float getRadius()                {return this.mRadius;}
     public float getMoveSpeed()             {return this.mMoveSpeed;}
     public int getMaxAmmo()                 {return MAX_AMMO;}
+    public int getCurrentAmmo()             {return this.mCurrentAmmoCount;}
 
 }

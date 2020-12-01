@@ -43,13 +43,17 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     private float mShakeCooldownTime                                = 0f; //this is the starting cooldown time
     private boolean mShake                                          = false; //is able top shake
     private float mScore                                            = 100;
+    private final float RELOAD_FLING_THRESHOLD;
     private final GestureDetectorCompat GESTURE_DETECTOR;
+    private final float DISPLAY_WIDTH_ONE_PERCENT;
+    private final float DISPLAY_HEIGHT_ONE_PERCENT;
 
     public float mYaw;
     public float mPitch;
     public float mRoll;
     public float mPlayerLateralMovement;
 
+    @SuppressLint("ClickableViewAccessibility")
     public Game(Context argContext) {
 
         super(argContext);
@@ -59,6 +63,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         surfaceHolder.addCallback(this);
 
         GESTURE_DETECTOR = new GestureDetectorCompat(getContext(), this);
+
+        this.setOnTouchListener((v, event) -> GESTURE_DETECTOR.onTouchEvent(event));
+
+        this.setOnClickListener(v -> {
+
+        });
+
+
         final int VIRUS_ROWS                = 3;
         final int VIRUS_ROW_COUNT           = 10;
         final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
@@ -66,9 +78,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         DisplayMetrics mDisplay             = getResources().getDisplayMetrics();
         DISPLAY_HEIGHT                      = mDisplay.heightPixels;
         DISPLAY_WIDTH                       = mDisplay.widthPixels;
+        DISPLAY_WIDTH_ONE_PERCENT           = (DISPLAY_WIDTH / 100f);
+        DISPLAY_HEIGHT_ONE_PERCENT          = (DISPLAY_HEIGHT / 100f);
         DISPLAY_RECT                        = new RectF(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
         mGameLoop                           = new GameLoop(this, surfaceHolder);
         PLAYER                              = new Player(getContext(), DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT, 20);
+        RELOAD_FLING_THRESHOLD              = DISPLAY_WIDTH_ONE_PERCENT * 25f;
 
         for (int i = 0; i < MAX_PROJECTILES; i++) { //populating the storage of projectile
 
@@ -76,24 +91,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
         }
 
-        float lsAmmoOffset = (DISPLAY_WIDTH / 100f) * 2f; //offset each element by x% of the screen
-        float lsPosY = (DISPLAY_HEIGHT / 100f) * 5f; //5% offset from the top of the screen
-        int lsAmmoUnderColor = ContextCompat.getColor(getContext(), R.color.UIAmmoUnder);
-        int lsAmmoOverColor = ContextCompat.getColor(getContext(), R.color.UIAmmoOver);
-        float lsAmmoRadius = 25f;
+        setupUI();
 
-        for(int i = 0; i < PLAYER.getMaxAmmo(); i++){
-
-            //max width - (how much distance between each ammo to fill the screen) + offset * the element
-            float lsPosX = DISPLAY_WIDTH - ((DISPLAY_WIDTH / (float)PLAYER.getMaxAmmo()) + ((lsAmmoOffset + lsAmmoRadius) * i));
-
-            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoOverColor));
-            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoUnderColor));
-
-        }
-
-        float lsMaxWidth            = (DISPLAY_WIDTH / 100f) * VIRUS_OFFSET_PERCENT_X;
-        float lsMaxHeight           = (DISPLAY_HEIGHT / 100f) * VIRUS_OFFSET_PERCENT_Y;
+        float lsMaxWidth            = DISPLAY_WIDTH_ONE_PERCENT * VIRUS_OFFSET_PERCENT_X;
+        float lsMaxHeight           = DISPLAY_HEIGHT_ONE_PERCENT * VIRUS_OFFSET_PERCENT_Y;
         float lsWidthIncrement      = lsMaxWidth / VIRUS_ROW_COUNT - 1; //-1 because aliens already are offset
         float lsHeightIncrement     = lsMaxHeight / VIRUS_ROWS - 1; //-1 because aliens already are offset
         float lsAlienPosX           = lsWidthIncrement;
@@ -103,7 +104,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
             for (int j = 0; j < VIRUS_ROW_COUNT; j++) {
 
-                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, 20, (DISPLAY_WIDTH / 100f) * 7.5f));
+                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, 20, DISPLAY_WIDTH_ONE_PERCENT * 7.5f));
 
                 lsAlienPosX += lsWidthIncrement;
 
@@ -117,14 +118,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         setFocusable(true);
 
     }
-
-    @SuppressLint("ClickableViewAccessibility")
+/*
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         GESTURE_DETECTOR.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
-
+*/
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
 
@@ -188,7 +188,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
         paint.setColor(lsColor);
         paint.setTextSize(50);
-        argCanvas.drawText("Score: " + String.format("%.0f", mScore), (DISPLAY_WIDTH * 0.5f) - ((DISPLAY_WIDTH / 100f) * 5f), 50, paint);
+        argCanvas.drawText("Score: " + String.format("%.0f", mScore), (DISPLAY_WIDTH * 0.5f) - (DISPLAY_WIDTH_ONE_PERCENT * 5f), 50, paint);
 
     }
 
@@ -242,8 +242,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     public void drawAmmo(Canvas argCanvas) {
 
+        int currentCounterIndex = 1;
+
         for(int i = 0; i < LIST_INTERFACE_ELEMENTS.size(); i++){
-            LIST_INTERFACE_ELEMENTS.get(i).draw(argCanvas);
+            if(PLAYER.getCurrentAmmo() >= currentCounterIndex && PLAYER.getCurrentAmmo() > 0) {
+                LIST_INTERFACE_ELEMENTS.get(i++).draw(argCanvas); //takes over UIElement
+                currentCounterIndex++;
+                continue;
+            }
+            LIST_INTERFACE_ELEMENTS.get(++i).draw(argCanvas); //increments to Under UIElement
+            currentCounterIndex++;
         }
 
     }
@@ -476,6 +484,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
             Database db = new Database(getContext());
 
             db.addData(etUsername.getText().toString(), lsScoreString);
+            Firebase_t.getInstance().add(etUsername.getText().toString(), lsScoreString);
             mDialog.dismiss();
             Looper.getMainLooper().quitSafely();
 
@@ -487,10 +496,31 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     }
 
+    private void setupUI() {
+
+        float lsAmmoOffset      = DISPLAY_WIDTH_ONE_PERCENT * 2f; //offset each element by x% of the screen
+        float lsPosY            = DISPLAY_HEIGHT_ONE_PERCENT * 5f; //5% offset from the top of the screen
+        int lsAmmoUnderColor    = ContextCompat.getColor(getContext(), R.color.UIAmmoUnder);
+        int lsAmmoOverColor     = ContextCompat.getColor(getContext(), R.color.UIAmmoOver);
+        float lsAmmoRadius      = DISPLAY_WIDTH_ONE_PERCENT * 2f;
+
+        for(int i = 0; i < PLAYER.getMaxAmmo(); i++){
+
+            //max width - (how much distance between each ammo to fill the screen) + offset * the element
+            float lsPosX = DISPLAY_WIDTH - ((DISPLAY_WIDTH / (float)PLAYER.getMaxAmmo()) + ((lsAmmoOffset + lsAmmoRadius) * i));
+
+            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoOverColor));
+            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoUnderColor));
+
+        }
+
+    }
+
     @Override
     public boolean onDown(MotionEvent e) {
 
-        spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
+        PLAYER.fire();
+        if(PLAYER.getCurrentAmmo() > 0) spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
         return false;
 
     }
@@ -512,11 +542,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     @Override
     public void onLongPress(MotionEvent e) {
-        spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
+//        spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
+        if(Math.abs(velocityX + velocityY) > RELOAD_FLING_THRESHOLD) PLAYER.reload();
+        return true;
     }
 }

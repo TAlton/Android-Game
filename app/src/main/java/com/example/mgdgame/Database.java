@@ -39,11 +39,11 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public boolean addData(String argUsername, String argScore) {
+    public void addData(String argUsername, String argScore) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        if(null == argUsername || null == argScore) return false;
+        if(null == argUsername || null == argScore) return;
 
         ContentValues lsContentValues = new ContentValues();
 
@@ -51,9 +51,6 @@ public class Database extends SQLiteOpenHelper {
         lsContentValues.put(COL3, argScore);
 
         long lsResult = db.insert(TABLE_NAME, null, lsContentValues); //null columnHack just for inserting blank columns
-
-        if(-1 == lsResult) return false;
-        return true;
 
     }
 
@@ -75,6 +72,7 @@ public class Database extends SQLiteOpenHelper {
 
         }
 
+        lsCursor.close();
         return lsReturnList;
 
     }
