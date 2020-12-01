@@ -1,24 +1,16 @@
 package com.example.mgdgame;
 
-import androidx.annotation.NonNull;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Firebase_t {
 
-    private FirebaseDatabase mFirebaseDB = FirebaseDatabase.getInstance();
-    private static final String FILE_PATH = "Highscores";
-    private DatabaseReference mDatabaseRef = mFirebaseDB.getReference().child(FILE_PATH);
+    private final FirebaseDatabase FIREBASE_DB = FirebaseDatabase.getInstance();
+    private static final String FILE_PATH = "Score";
+    private final DatabaseReference DATABASE_REF = FIREBASE_DB.getReference();
     private List<Score> mListHighscores = new ArrayList<>();
     private static Firebase_t firebase_instance = null;
 
@@ -31,9 +23,9 @@ public class Firebase_t {
 
     }
 
-    public void add(String argUsername, String argScore) {
+    public void add(Score argScore) {
 
-        mDatabaseRef.push().setValue(argScore);
+        DATABASE_REF.child(FILE_PATH).push().setValue(argScore);
 
     }
 

@@ -72,7 +72,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
 
         final int VIRUS_ROWS                = 3;
-        final int VIRUS_ROW_COUNT           = 10;
+        final int VIRUS_ROW_COUNT           = 1;
         final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
         final float VIRUS_OFFSET_PERCENT_Y  = 30; //^
         DisplayMetrics mDisplay             = getResources().getDisplayMetrics();
@@ -484,7 +484,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
             Database db = new Database(getContext());
 
             db.addData(etUsername.getText().toString(), lsScoreString);
-            Firebase_t.getInstance().add(etUsername.getText().toString(), lsScoreString);
+            Firebase_t.getInstance().add(new Score(etUsername.getText().toString(), (int) mScore));
             mDialog.dismiss();
             Looper.getMainLooper().quitSafely();
 
@@ -502,7 +502,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         float lsPosY            = DISPLAY_HEIGHT_ONE_PERCENT * 5f; //5% offset from the top of the screen
         int lsAmmoUnderColor    = ContextCompat.getColor(getContext(), R.color.UIAmmoUnder);
         int lsAmmoOverColor     = ContextCompat.getColor(getContext(), R.color.UIAmmoOver);
-        float lsAmmoRadius      = DISPLAY_WIDTH_ONE_PERCENT * 2f;
+        float lsAmmoRadius      = DISPLAY_WIDTH_ONE_PERCENT;
 
         for(int i = 0; i < PLAYER.getMaxAmmo(); i++){
 
