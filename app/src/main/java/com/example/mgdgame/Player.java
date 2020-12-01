@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat;
 public class Player extends DrawableEntity {
 
     private float mMoveSpeed = 0;
+    private static final int MAX_AMMO = 10;
+    private int mCurrentAmmoCount = MAX_AMMO;
 
     public Player(Context argContext, float argPosX, float argPosY, float argRadius) {
 
@@ -46,5 +48,6 @@ public class Player extends DrawableEntity {
     public void setMoveSpeed(float argF)    {this.mMoveSpeed = argF;}
     public float getRadius()                {return this.mRadius;}
     public float getMoveSpeed()             {return this.mMoveSpeed;}
+    public int getMaxAmmo()                 {return MAX_AMMO;}
 
 }

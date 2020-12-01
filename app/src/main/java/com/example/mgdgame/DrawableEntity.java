@@ -41,4 +41,4 @@ public abstract class DrawableEntity
 
 }
 
-enum eFaction {DEFAULT, PLAYER, VIRUS}
+enum eFaction {DEFAULT, PLAYER, VIRUS, UI}

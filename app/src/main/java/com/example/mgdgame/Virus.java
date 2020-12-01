@@ -13,14 +13,15 @@ public class Virus extends DrawableEntity {
     private boolean mDisabled       = false;
     private boolean mAlive          = true;
     private float mWaitTimer;
-    public final float MOVE_SPEED   = 100f;
+    public float mMoveSpeed;
 
-    Virus(Context argContext, float argPosX, float argPosY, float argRadius) {
+    Virus(Context argContext, float argPosX, float argPosY, float argRadius, float argMoveSpeed) {
 
         this.mFaction   = eFaction.VIRUS;
         this.mPosX      = argPosX;
         this.mPosY      = argPosY - argRadius - 1f; // -1f for any aliasing or rounding
         this.mRadius    = argRadius;
+        this.mMoveSpeed = argMoveSpeed;
         mPaint          = new Paint();
         int color       = ContextCompat.getColor(argContext, R.color.virus);
         mRect           = new RectF(mPosX - mRadius, mPosY - mRadius, mPosX + mRadius, mPosY + mRadius);
@@ -63,6 +64,7 @@ public class Virus extends DrawableEntity {
     public float getRadius()                    {return this.mRadius;}
     public boolean isDisabled()                 {return this.mDisabled;}
     public boolean isAlive()                    {return this.mAlive;}
+    public float getMoveSpeed()                 {return this.mMoveSpeed;}
     public void kill()                          {this.mAlive = false;}
     public void disable()                       {this.mDisabled = true;}
     public void enable()                        {this.mDisabled = false;}

@@ -13,4 +13,6 @@
     <color name="ProjectilePlayer">#FFFFFFFF</color>
     <color name="ProjectileVirus">#FF0000</color>
     <color name="ScoreTextColor">#00BCD4</color>
+    <color name="UIAmmoUnder">#858585</color>
+    <color name="UIAmmoOver">#FFFFFF</color>
 </resources>

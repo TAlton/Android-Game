@@ -3,11 +3,9 @@ package com.example.mgdgame;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.gesture.Gesture;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Debug;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -23,7 +21,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +34,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     private final int DISPLAY_HEIGHT;
     private float mVirusWaitTime;
     private GameLoop mGameLoop;
-    private final List<Projectile> LIST_PROJECTILES     = new ArrayList<>();
-    private final List<Virus> LIST_VIRUSES              = new ArrayList<>();
-    private final int MAX_PROJECTILES                   = 50;
-    private boolean mVirusDirLeft                       = false; //false = left, true = right
-    private final float SHAKE_COOLDOWN                  = 25f; //this is the cooldown time of being able to shake
-    private float mShakeCooldownTime                    = 0f; //this is the starting cooldown time
-    private boolean mShake                              = false; //is able top shake
-    private float mScore                                = 100;
-    private GestureDetectorCompat mGestureDetector;
+    private final List<Projectile> LIST_PROJECTILES                 = new ArrayList<>();
+    private final List<InterfaceElement> LIST_INTERFACE_ELEMENTS    = new ArrayList<>();
+    private final List<Virus> LIST_VIRUSES                          = new ArrayList<>();
+    private final int MAX_PROJECTILES                               = 50;
+    private boolean mVirusDirLeft                                   = false; //false = left, true = right
+    private final float SHAKE_COOLDOWN                              = 25f; //this is the cooldown time of being able to shake
+    private float mShakeCooldownTime                                = 0f; //this is the starting cooldown time
+    private boolean mShake                                          = false; //is able top shake
+    private float mScore                                            = 100;
+    private final GestureDetectorCompat GESTURE_DETECTOR;
 
     public float mYaw;
     public float mPitch;
@@ -60,7 +58,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
         surfaceHolder.addCallback(this);
 
-        mGestureDetector = new GestureDetectorCompat(getContext(), this);
+        GESTURE_DETECTOR = new GestureDetectorCompat(getContext(), this);
         final int VIRUS_ROWS                = 3;
         final int VIRUS_ROW_COUNT           = 10;
         final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
@@ -78,6 +76,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
         }
 
+        float lsAmmoOffset = (DISPLAY_WIDTH / 100f) * 2f; //offset each element by x% of the screen
+        float lsPosY = (DISPLAY_HEIGHT / 100f) * 5f; //5% offset from the top of the screen
+        int lsAmmoUnderColor = ContextCompat.getColor(getContext(), R.color.UIAmmoUnder);
+        int lsAmmoOverColor = ContextCompat.getColor(getContext(), R.color.UIAmmoOver);
+        float lsAmmoRadius = 25f;
+
+        for(int i = 0; i < PLAYER.getMaxAmmo(); i++){
+
+            //max width - (how much distance between each ammo to fill the screen) + offset * the element
+            float lsPosX = DISPLAY_WIDTH - ((DISPLAY_WIDTH / (float)PLAYER.getMaxAmmo()) + ((lsAmmoOffset + lsAmmoRadius) * i));
+
+            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoOverColor));
+            LIST_INTERFACE_ELEMENTS.add(new InterfaceElement(getContext(), lsPosX, lsPosY, lsAmmoRadius, lsAmmoUnderColor));
+
+        }
+
         float lsMaxWidth            = (DISPLAY_WIDTH / 100f) * VIRUS_OFFSET_PERCENT_X;
         float lsMaxHeight           = (DISPLAY_HEIGHT / 100f) * VIRUS_OFFSET_PERCENT_Y;
         float lsWidthIncrement      = lsMaxWidth / VIRUS_ROW_COUNT - 1; //-1 because aliens already are offset
@@ -89,7 +103,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
             for (int j = 0; j < VIRUS_ROW_COUNT; j++) {
 
-                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, 20));
+                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, 20, (DISPLAY_WIDTH / 100f) * 7.5f));
 
                 lsAlienPosX += lsWidthIncrement;
 
@@ -107,7 +121,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
+        GESTURE_DETECTOR.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
@@ -162,6 +176,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         drawFPS(argCanvas);
         drawUPS(argCanvas);
         drawScore(argCanvas);
+        drawAmmo(argCanvas);
 
     }
 
@@ -222,6 +237,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         paint.setColor(lsColor);
         paint.setTextSize(30);
         argCanvas.drawText("Pitch: " + Pitch, 600, 100, paint);
+
+    }
+
+    public void drawAmmo(Canvas argCanvas) {
+
+        for(int i = 0; i < LIST_INTERFACE_ELEMENTS.size(); i++){
+            LIST_INTERFACE_ELEMENTS.get(i).draw(argCanvas);
+        }
 
     }
 
@@ -345,16 +368,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
                 if (!LIST_VIRUSES.get(i).isAlive()) continue;
                 //if the movement will move the entity offscreen dont allow
-                if (!LIST_VIRUSES.get(i).move(Utility.getInstance().validateMovementInBounds(LIST_VIRUSES.get(i), LIST_VIRUSES.get(i).MOVE_SPEED * argDT, LIST_VIRUSES.get(i).getRadius(), DISPLAY_WIDTH, DISPLAY_HEIGHT) ?
-                        LIST_VIRUSES.get(i).MOVE_SPEED * argDT :
+                if (!LIST_VIRUSES.get(i).move(Utility.getInstance().validateMovementInBounds(LIST_VIRUSES.get(i), LIST_VIRUSES.get(i).getMoveSpeed() * argDT, LIST_VIRUSES.get(i).getRadius(), DISPLAY_WIDTH, DISPLAY_HEIGHT) ?
+                        LIST_VIRUSES.get(i).getMoveSpeed() * argDT :
                         0f)) { //checks if the movement is valid, if it is then it returns the movespeed into move() else it returns 0 into move and we run this body
 
                     this.mVirusDirLeft = !this.mVirusDirLeft;
 
                     for (int j = i; j < LIST_VIRUSES.size(); j++) {
 
-                        LIST_VIRUSES.get(i).move(Utility.getInstance().validateMovementInBounds(LIST_VIRUSES.get(i), LIST_VIRUSES.get(i).MOVE_SPEED * argDT, LIST_VIRUSES.get(i).getRadius(), DISPLAY_WIDTH, DISPLAY_HEIGHT) ?
-                                LIST_VIRUSES.get(i).MOVE_SPEED * argDT :
+                        LIST_VIRUSES.get(i).move(Utility.getInstance().validateMovementInBounds(LIST_VIRUSES.get(i), LIST_VIRUSES.get(i).getMoveSpeed() * argDT, LIST_VIRUSES.get(i).getRadius(), DISPLAY_WIDTH, DISPLAY_HEIGHT) ?
+                                LIST_VIRUSES.get(i).getMoveSpeed() * argDT :
                                 0f);
 
                     }
