@@ -33,14 +33,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final int DISPLAY_HEIGHT;
     private float mVirusWaitTime;
     private GameLoop mGameLoop;
-    private final List<Projectile> LIST_PROJECTILES = new ArrayList<Projectile>();
-    private final List<Virus> LIST_VIRUSES = new ArrayList<Virus>();
-    private final int MAX_PROJECTILES = 50;
-    private boolean mVirusDirLeft = false; //false = left, true = right
-    private final float SHAKE_COOLDOWN = 25f; //this is the cooldown time of being able to shake
-    private float mShakeCooldownTime = 0f; //this is the starting cooldown time
-    private boolean mShake = false; //is able top shake
-    private float mScore = 100;
+    private final List<Projectile> LIST_PROJECTILES     = new ArrayList<>();
+    private final List<Virus> LIST_VIRUSES              = new ArrayList<>();
+    private final int MAX_PROJECTILES                   = 50;
+    private boolean mVirusDirLeft                       = false; //false = left, true = right
+    private final float SHAKE_COOLDOWN                  = 25f; //this is the cooldown time of being able to shake
+    private float mShakeCooldownTime                    = 0f; //this is the starting cooldown time
+    private boolean mShake                              = false; //is able top shake
+    private float mScore                                = 100;
 
     public float mYaw;
     public float mPitch;
@@ -55,16 +55,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         surfaceHolder.addCallback(this);
 
-        final int VIRUS_ROWS = 3;
-        final int VIRUS_ROW_COUNT = 10;
-        final int VIRUS_OFFSET_PERCENT_X = 80; //between 0-100
-        final float VIRUS_OFFSET_PERCENT_Y = 30; //^
-        DisplayMetrics mDisplay = getResources().getDisplayMetrics();
-        DISPLAY_HEIGHT = mDisplay.heightPixels;
-        DISPLAY_WIDTH = mDisplay.widthPixels;
-        DISPLAY_RECT = new RectF(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-        mGameLoop = new GameLoop(this, surfaceHolder);
-        PLAYER = new Player(getContext(), DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT, 20);
+        final int VIRUS_ROWS                = 3;
+        final int VIRUS_ROW_COUNT           = 10;
+        final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
+        final float VIRUS_OFFSET_PERCENT_Y  = 30; //^
+        DisplayMetrics mDisplay             = getResources().getDisplayMetrics();
+        DISPLAY_HEIGHT                      = mDisplay.heightPixels;
+        DISPLAY_WIDTH                       = mDisplay.widthPixels;
+        DISPLAY_RECT                        = new RectF(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+        mGameLoop                           = new GameLoop(this, surfaceHolder);
+        PLAYER                              = new Player(getContext(), DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT, 20);
 
         for (int i = 0; i < MAX_PROJECTILES; i++) { //populating the storage of projectile
 
@@ -72,12 +72,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         }
 
-        float lsMaxWidth = (DISPLAY_WIDTH / 100f) * VIRUS_OFFSET_PERCENT_X;
-        float lsMaxHeight = (DISPLAY_HEIGHT / 100f) * VIRUS_OFFSET_PERCENT_Y;
-        float lsWidthIncrement = lsMaxWidth / VIRUS_ROW_COUNT - 1; //-1 because aliens already are offset
-        float lsHeightIncrement = lsMaxHeight / VIRUS_ROWS - 1; //-1 because aliens already are offset
-        float lsAlienPosX = lsWidthIncrement;
-        float lsAlienPosY = lsHeightIncrement;
+        float lsMaxWidth            = (DISPLAY_WIDTH / 100f) * VIRUS_OFFSET_PERCENT_X;
+        float lsMaxHeight           = (DISPLAY_HEIGHT / 100f) * VIRUS_OFFSET_PERCENT_Y;
+        float lsWidthIncrement      = lsMaxWidth / VIRUS_ROW_COUNT - 1; //-1 because aliens already are offset
+        float lsHeightIncrement     = lsMaxHeight / VIRUS_ROWS - 1; //-1 because aliens already are offset
+        float lsAlienPosX           = lsWidthIncrement;
+        float lsAlienPosY           = lsHeightIncrement;
 
         for (int i = 0; i < VIRUS_ROWS; i++) {
 
@@ -182,9 +182,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void drawUPS(Canvas argCanvas) {
 
-        String averageUPS = Double.toString(mGameLoop.getUpdatesPerSecond());
-        Paint paint = new Paint();
-        int lsColor = ContextCompat.getColor(getContext(), R.color.pink);
+        String averageUPS   = Double.toString(mGameLoop.getUpdatesPerSecond());
+        Paint paint         = new Paint();
+        int lsColor         = ContextCompat.getColor(getContext(), R.color.pink);
 
         paint.setColor(lsColor);
         paint.setTextSize(30);
@@ -194,9 +194,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void drawFPS(Canvas argCanvas) {
 
-        String averageFPS = Double.toString(mGameLoop.getFramesPerSecond());
-        Paint paint = new Paint();
-        int lsColor = ContextCompat.getColor(getContext(), R.color.pink);
+        String averageFPS   = Double.toString(mGameLoop.getFramesPerSecond());
+        Paint paint         = new Paint();
+        int lsColor         = ContextCompat.getColor(getContext(), R.color.pink);
 
         paint.setColor(lsColor);
         paint.setTextSize(30);
@@ -206,9 +206,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void drawYaw(Canvas argCanvas) {
 
-        String Yaw = Float.toString(this.mYaw);
-        Paint paint = new Paint();
-        int lsColor = ContextCompat.getColor(getContext(), R.color.pink);
+        String Yaw      = Float.toString(this.mYaw);
+        Paint paint     = new Paint();
+        int lsColor     = ContextCompat.getColor(getContext(), R.color.pink);
 
         paint.setColor(lsColor);
         paint.setTextSize(30);
@@ -218,9 +218,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void drawPitch(Canvas argCanvas) {
 
-        String Pitch = Float.toString(this.mPitch);
-        Paint paint = new Paint();
-        int lsColor = ContextCompat.getColor(getContext(), R.color.pink);
+        String Pitch    = Float.toString(this.mPitch);
+        Paint paint     = new Paint();
+        int lsColor     = ContextCompat.getColor(getContext(), R.color.pink);
 
         paint.setColor(lsColor);
         paint.setTextSize(30);
@@ -300,7 +300,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
                     if(LIST_VIRUSES.size() == 1) break; //check the first then break
 
-                    LIST_VIRUSES.sort((argA1, argA2) -> { //put this into a function!!!!
+                    LIST_VIRUSES.sort((argA1, argA2) -> { //sorting the list by the isAlive variable
                         if (argA1.isAlive() == argA2.isAlive()) return 0;
                         if (argA1.isAlive() && !argA2.isAlive()) return -1;
 
@@ -308,6 +308,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
                     });
 
+                    //potential to move this into function that takes DrawableEntity
                     LIST_PROJECTILES.sort((argP1, argP2) -> {
                         //moves the now inactive projectile to the index after the last active bullet,
                         //purpose of this is to break the collision loop when we find an inactive projectile as due to the sort all the other projectiles will be inactive
@@ -329,7 +330,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
             if(0f == mVirusWaitTime){
 
-                mShake                  = !mShake;
+                mShake                  = false;
                 mShakeCooldownTime      = 0f;
 
             }
@@ -343,7 +344,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
             }
 
-            for (int i = 0; i < LIST_VIRUSES.size(); i++) { //this is honestly awful, need to change the way the virus' get updated
+            for (int i = 0; i < LIST_VIRUSES.size(); i++) { //virus movement
 
                 if (!LIST_VIRUSES.get(i).isAlive()) continue;
                 //if the movement will move the entity offscreen dont allow
@@ -370,7 +371,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
 
-                if(LIST_VIRUSES.get(i).getRect().intersect(PLAYER.getRect())){
+                if(LIST_VIRUSES.get(i).getRect().intersect(PLAYER.getRect())){ //virus collision with player to end game
                     showDialog();
                 }
 
@@ -435,13 +436,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Looper.prepare();
         AlertDialog mDialog;
 
-        LayoutInflater mInflater = LayoutInflater.from(getContext());
-        final View mDialogView = mInflater.inflate(R.layout.dialog_score_submission, null);
-        Button btnSubmit = mDialogView.findViewById(R.id.btnSubmit);
-        EditText etUsername = mDialogView.findViewById(R.id.etUsername);
-        TextView tvScore = mDialogView.findViewById(R.id.tvScoreValue);
-        final String lsScoreString = Float.toString(mScore);
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater mInflater        = LayoutInflater.from(getContext());
+        final View mDialogView          = mInflater.inflate(R.layout.dialog_score_submission, null);
+        Button btnSubmit                = mDialogView.findViewById(R.id.btnSubmit);
+        EditText etUsername             = mDialogView.findViewById(R.id.etUsername);
+        TextView tvScore                = mDialogView.findViewById(R.id.tvScoreValue);
+        final String lsScoreString      = Float.toString(mScore);
+        AlertDialog.Builder mBuilder    = new AlertDialog.Builder(getContext());
 
         tvScore.setText(lsScoreString);
         mBuilder.setView(mDialogView);
@@ -450,17 +451,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         mDialog.setCanceledOnTouchOutside(false);
 
-        btnSubmit.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnSubmit.setOnClickListener(view -> {
 
-                Database db = new Database(getContext());
+            Database db = new Database(getContext());
 
-                db.addData(etUsername.getText().toString(), lsScoreString);
-                mDialog.dismiss();
-                Looper.getMainLooper().quitSafely();
+            db.addData(etUsername.getText().toString(), lsScoreString);
+            mDialog.dismiss();
+            Looper.getMainLooper().quitSafely();
 
-            }
         });
 
         mDialog.show();
