@@ -484,7 +484,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
             Database db = new Database(getContext());
 
             db.addData(etUsername.getText().toString(), lsScoreString);
-            Firebase_t.getInstance().add(new Score(etUsername.getText().toString(), (int) mScore));
+            new Firebase_t().add(new Score(etUsername.getText().toString(), (int) mScore));
             mDialog.dismiss();
             Looper.getMainLooper().quitSafely();
 

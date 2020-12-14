@@ -7,6 +7,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +23,10 @@ public class HighscoreActivity extends Activity {
         TextView lsScores   = findViewById(R.id.tvHighscore);
         Database db         = new Database(this);
 
-        List<Score> mListHighscores = new ArrayList<Score>();
+        List<Score> mListHighscores;
 
-        mListHighscores                 = db.getAll();
+        //mListHighscores                 = db.getAll();
+        mListHighscores                 = new Firebase_t().getScores();
         StringBuilder lsScoreString     = new StringBuilder();
 
         for(int i = 0; i < mListHighscores.size(); i++){
