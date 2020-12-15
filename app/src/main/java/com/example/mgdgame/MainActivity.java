@@ -21,15 +21,22 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
     }
-    public void startGame(View argView){
+    public void startGame(View argView) {
 
         startActivity(new Intent(MainActivity.this, GameActivity.class));
 
     }
-    public void highScores(View argView){
+    public void highScores(View argView) {
 
         startActivity(new Intent(MainActivity.this, HighscoreActivity.class));
         finish();
+    }
+
+    public void tutorial(View argView) {
+
+        startActivity(new Intent(MainActivity.this, TutorialActivity.class));
+        finish();
+
     }
 
 }

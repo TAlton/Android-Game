@@ -14,5 +14,8 @@
     <string name="scoreSubmissionText">Score :</string>
     <string name="scoreSubmissionUsernameHint">Enter your username.</string>
     <string name="highscoreBack">Back</string>
+    <string name="tutorialBack">Back</string>
     <string name="btnHighscore">High scores</string>
+    <string name="btnTutorial">Tutorial</string>
+    <string name="title_activity_tutorial">Tutorial</string>
 </resources>

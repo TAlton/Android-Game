@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".MainActivity">
 
     <TextView
@@ -55,12 +56,13 @@
         android:layout_width="768dp"
         android:layout_height="96dp"
         android:layout_marginTop="15dp"
-        android:text="@string/MainMenuBtn3"
+        android:text="@string/btnTutorial"
         android:textSize="58sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button2"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        android:onClick="tutorial"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

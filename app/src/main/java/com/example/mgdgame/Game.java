@@ -79,7 +79,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
 
         final int VIRUS_ROWS                = 3;
-        final int VIRUS_ROW_COUNT           = 1;
+        final int VIRUS_ROW_COUNT           = 10;
         final int VIRUS_OFFSET_PERCENT_X    = 80; //between 0-100
         final float VIRUS_OFFSET_PERCENT_Y  = 30; //^
         DisplayMetrics mDisplay             = getResources().getDisplayMetrics();
