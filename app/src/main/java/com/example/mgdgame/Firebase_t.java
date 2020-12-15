@@ -15,14 +15,17 @@ import java.util.Objects;
 
 public class Firebase_t {
 
-    private final FirebaseDatabase FIREBASE_DB = FirebaseDatabase.getInstance();
+    private FirebaseDatabase mFirebase;
     private static final String FILE_PATH = "Score";
-    private final DatabaseReference DATABASE_REF = FIREBASE_DB.getReference().child(FILE_PATH);
+    private DatabaseReference mFirebaseRef;
     private static List<Score> mListHighscores = new ArrayList<>();
 
     public Firebase_t() {
 
-        DATABASE_REF.addListenerForSingleValueEvent(new ValueEventListener() {
+        mFirebase.getInstance().getReference().keepSynced(true);
+        mFirebase = FirebaseDatabase.getInstance();
+        mFirebaseRef = mFirebase.getReference().child(FILE_PATH);
+        mFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -39,7 +42,7 @@ public class Firebase_t {
 
     public void add(Score argScore) {
 
-        DATABASE_REF.push().setValue(argScore);
+        mFirebaseRef.push().setValue(argScore);
 
     }
     private void getAll(Map<String, Object> argHighscores) {

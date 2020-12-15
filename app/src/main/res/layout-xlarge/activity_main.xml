@@ -34,20 +34,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.191"
-        android:onClick="buttonClick"/>
+        android:onClick="startGame"/>
 
     <Button
         android:id="@+id/button2"
         android:layout_width="768dp"
         android:layout_height="96dp"
         android:layout_marginTop="15dp"
-        android:text="@string/MainMenuBtn2"
+        android:text="@string/btnHighscore"
         android:textSize="58sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        android:onClick="highScores"/>
 
     <Button
         android:id="@+id/button3"

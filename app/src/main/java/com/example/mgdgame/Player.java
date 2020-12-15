@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat;
 public class Player extends DrawableEntity {
 
     private float mMoveSpeed = 0;
+    private float mAttackTimer = 0f;
+    private final float ATTACK_SPEED = 0.25f;
     private static final int MAX_AMMO = 10;
     private int mCurrentAmmoCount = MAX_AMMO;
 
@@ -37,6 +39,9 @@ public class Player extends DrawableEntity {
     }
     @Override
     final public void update(float argDT) {
+
+        mAttackTimer += (mAttackTimer < ATTACK_SPEED) ? argDT : 0f;
+
     }
     public void move(float argX) {
 
@@ -44,7 +49,7 @@ public class Player extends DrawableEntity {
         updateRect();
 
     }
-    public void fire()                      {this.mCurrentAmmoCount = (mCurrentAmmoCount >= 1) ? mCurrentAmmoCount - 1 : 0;}
+    public void fire()                      {if(mAttackTimer >= ATTACK_SPEED) this.mCurrentAmmoCount = (this.mCurrentAmmoCount >= 1) ? this.mCurrentAmmoCount - 1 : 0;}
     public void reload()                    {this.mCurrentAmmoCount = MAX_AMMO;}
     public void setMoveSpeed(float argF)    {this.mMoveSpeed = argF;}
     public float getRadius()                {return this.mRadius;}

@@ -1,11 +1,15 @@
 package com.example.mgdgame;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -18,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
@@ -32,6 +37,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     private final Player PLAYER;
     private final int DISPLAY_WIDTH;
     private final int DISPLAY_HEIGHT;
+    private AlertDialog mDialog;
     private float mVirusWaitTime;
     private GameLoop mGameLoop;
     private final List<Projectile> LIST_PROJECTILES                 = new ArrayList<>();
@@ -47,6 +53,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     private final GestureDetectorCompat GESTURE_DETECTOR;
     private final float DISPLAY_WIDTH_ONE_PERCENT;
     private final float DISPLAY_HEIGHT_ONE_PERCENT;
+    public boolean mGameEnd                                        = false;
 
     public float mYaw;
     public float mPitch;
@@ -82,12 +89,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         DISPLAY_HEIGHT_ONE_PERCENT          = (DISPLAY_HEIGHT / 100f);
         DISPLAY_RECT                        = new RectF(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
         mGameLoop                           = new GameLoop(this, surfaceHolder);
-        PLAYER                              = new Player(getContext(), DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT, 20);
+        PLAYER                              = new Player(getContext(), DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT, DISPLAY_WIDTH_ONE_PERCENT * 1f);
         RELOAD_FLING_THRESHOLD              = DISPLAY_WIDTH_ONE_PERCENT * 25f;
 
         for (int i = 0; i < MAX_PROJECTILES; i++) { //populating the storage of projectile
 
-            LIST_PROJECTILES.add(new Projectile(getContext(), 0, 0));
+            LIST_PROJECTILES.add(new Projectile(getContext(), 0, 0, DISPLAY_HEIGHT_ONE_PERCENT * 100f));
 
         }
 
@@ -104,7 +111,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
             for (int j = 0; j < VIRUS_ROW_COUNT; j++) {
 
-                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, 20, DISPLAY_WIDTH_ONE_PERCENT * 7.5f));
+                LIST_VIRUSES.add(new Virus(getContext(), lsAlienPosX, lsAlienPosY, DISPLAY_WIDTH_ONE_PERCENT * 1f, DISPLAY_WIDTH_ONE_PERCENT * 7.5f));
 
                 lsAlienPosX += lsWidthIncrement;
 
@@ -118,13 +125,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         setFocusable(true);
 
     }
-/*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        GESTURE_DETECTOR.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
-*/
+    /*
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            GESTURE_DETECTOR.onTouchEvent(event);
+            return super.onTouchEvent(event);
+        }
+    */
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
 
@@ -145,13 +152,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        endGame();
+
     }
 
     @Override
     public void draw(Canvas argCanvas) {
 
         super.draw(argCanvas);
+
+        if(mGameEnd) return;
 
         //this can be changed into a function that takes a lambda
         for (int i = 0; i < LIST_PROJECTILES.size(); i++) {
@@ -269,10 +278,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
     }
 
     public void update(float argDT) {
+
+        if(mGameEnd) return;
+
         mScore -= (1f * argDT);
 
         if(!LIST_VIRUSES.get(0).isAlive()) { //due to sorting if the first index virus is dead they are all dead
 
+            //endGame();
             showDialog();
 
         }
@@ -280,6 +293,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
         PLAYER.move(Utility.getInstance().validateMovementInBounds(PLAYER, PLAYER.getMoveSpeed() * argDT, PLAYER.getRadius(), DISPLAY_WIDTH, DISPLAY_HEIGHT) ?
                 PLAYER.getMoveSpeed() * argDT :
                 0f); //if the movement will move the entity offscreen dont allow
+
         PLAYER.update(argDT);
 
         //could make this into one loop, might stink
@@ -290,8 +304,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
             if(!DISPLAY_RECT.contains(LIST_PROJECTILES.get(i).getRect())){
 
                 LIST_PROJECTILES.get(i).disable();
-
-                if(LIST_PROJECTILES.size() == 1) continue; //if there is only one active projectile there is no need to rotate the list
 
                 LIST_PROJECTILES.sort((argP1, argP2) -> {
                     //moves the now inactive projectile to the index after the last active bullet,
@@ -310,6 +322,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
             LIST_PROJECTILES.get(i).update(argDT); //if a projectile IsActive and is not outside of the display bounds we update it.
 
         }
+
         for(int i = 0; i < LIST_PROJECTILES.size(); i++) { //check each projectile
 
             if(!LIST_PROJECTILES.get(i).isActive()) continue;
@@ -325,8 +338,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
                     LIST_VIRUSES.get(j).kill();
                     mScore += LIST_VIRUSES.get(j).getScoreValue();
                     LIST_PROJECTILES.get(i).disable();
-
-                    if(LIST_VIRUSES.size() == 1) break; //check the first then break
 
                     LIST_VIRUSES.sort((argA1, argA2) -> { //sorting the list by the isAlive variable
                         if (argA1.isAlive() == argA2.isAlive()) return 0;
@@ -400,7 +411,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
                 }
 
                 if(LIST_VIRUSES.get(i).getRect().intersect(PLAYER.getRect())){ //virus collision with player to end game
+
+                    //endGame();
                     showDialog();
+
                 }
 
             }
@@ -448,51 +462,34 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     public void endGame() {
 
-        try {
 
-            mGameLoop.join();
+        //db.addData(etUsername.getText().toString(), lsScoreString);
+        //new Firebase_t().add(new Score("test", (int) mScore));
 
-        } catch (InterruptedException e) {
+        mGameLoop.interrupt();
+        Looper.myLooper().quit();
+        ((GameActivity)getContext()).end();
 
-            e.printStackTrace();
 
-        }
+
     }
 
     private void showDialog() { //score submission dialog
 
-        Looper.prepare();
-        AlertDialog mDialog;
+        //pause();
 
-        LayoutInflater mInflater        = LayoutInflater.from(getContext());
-        final View mDialogView          = mInflater.inflate(R.layout.dialog_score_submission, null);
-        Button btnSubmit                = mDialogView.findViewById(R.id.btnSubmit);
-        EditText etUsername             = mDialogView.findViewById(R.id.etUsername);
-        TextView tvScore                = mDialogView.findViewById(R.id.tvScoreValue);
-        final String lsScoreString      = Float.toString(mScore);
-        AlertDialog.Builder mBuilder    = new AlertDialog.Builder(getContext());
+        if(null == Looper.myLooper()) {
 
-        tvScore.setText(lsScoreString);
-        mBuilder.setView(mDialogView);
+            Looper.prepare();
 
-        mDialog = mBuilder.create();
-
-        mDialog.setCanceledOnTouchOutside(false);
-
-        btnSubmit.setOnClickListener(view -> {
-
-            Database db = new Database(getContext());
-
-            db.addData(etUsername.getText().toString(), lsScoreString);
-            new Firebase_t().add(new Score(etUsername.getText().toString(), (int) mScore));
-            mDialog.dismiss();
-            Looper.getMainLooper().quitSafely();
-
-        });
-
+        }
+        setupHighscoreDialog();
+        setFocusable(true);
         mDialog.show();
         Looper.loop();
-        endGame();
+        //Looper.getMainLooper().quit();
+
+        mGameEnd = true;
 
     }
 
@@ -516,13 +513,50 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     }
 
+    private void setupHighscoreDialog() {
+
+        LayoutInflater mInflater        = LayoutInflater.from(getContext());
+        final View mDialogView          = mInflater.inflate(R.layout.dialog_score_submission, null);
+        Button btnSubmit                = mDialogView.findViewById(R.id.btnSubmit);
+        EditText etUsername             = mDialogView.findViewById(R.id.etUsername);
+        TextView tvScore                = mDialogView.findViewById(R.id.tvScoreValue);
+        final String lsScoreString      = Float.toString(mScore);
+        tvScore.setText(lsScoreString);
+        AlertDialog.Builder mBuilder    = new AlertDialog.Builder(getContext());
+
+        mBuilder.setView(mDialogView);
+
+        mDialog = mBuilder.create();
+
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialogView.setFocusable(true);
+
+        mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+                endGame();
+
+            }
+
+        });
+
+        btnSubmit.setOnClickListener(view -> {
+
+            Database db = new Database(getContext());
+
+            db.addData(etUsername.getText().toString(), lsScoreString);
+            new Firebase_t().add(new Score(etUsername.getText().toString(), (int) mScore));
+            mDialog.dismiss();
+
+        });
+
+    }
+
     @Override
     public boolean onDown(MotionEvent e) {
-
-        PLAYER.fire();
-        if(PLAYER.getCurrentAmmo() > 0) spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
         return false;
-
     }
 
     @Override
@@ -532,7 +566,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Gesture
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+
+        //endGame();
+        PLAYER.fire();
+        if(PLAYER.getCurrentAmmo() > 0) spawnProjectile(eFaction.PLAYER, PLAYER.getPosX(), PLAYER.getPosY());
         return false;
+
     }
 
     @Override

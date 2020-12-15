@@ -1,12 +1,19 @@
 package com.example.mgdgame;
 
         import android.app.Activity;
+        import android.content.Intent;
         import android.content.pm.ActivityInfo;
         import android.os.Bundle;
+        import android.os.Handler;
+        import android.os.HandlerThread;
+        import android.os.Looper;
+
+        import com.google.firebase.database.Transaction;
 
 //entryPoint
 public class GameActivity extends Activity {
 
+    private Handler mHandler;
     private Game mGame;
     private Sensor_t mGyroscope;
     private Sensor_t mAccelerometer;
@@ -39,6 +46,7 @@ public class GameActivity extends Activity {
             if(lsTotalMotion >= GYROSCOPE_THRESHOLD) mGame.setShake(true);
 
         });
+
     }
     @Override
     protected void onStart() {
@@ -47,7 +55,7 @@ public class GameActivity extends Activity {
     @Override
     protected void onStop() {
 
-        mGame.endGame();
+        //mGame.endGame();
         super.onStop();
 
     }
@@ -68,5 +76,13 @@ public class GameActivity extends Activity {
         super.onPause();
 
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        startActivity(new Intent(GameActivity.this, MainActivity.class));
+        finish();
+    }
+    public void end() {
+        startActivity(new Intent(GameActivity.this, MainActivity.class));
+    }
 }

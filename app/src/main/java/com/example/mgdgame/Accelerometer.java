@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class Accelerometer extends Sensor_t{
+public class Accelerometer extends Sensor_t {
 
     private Listener mListener;
     private static final int SENSOR_TYPE = Sensor.TYPE_ACCELEROMETER;

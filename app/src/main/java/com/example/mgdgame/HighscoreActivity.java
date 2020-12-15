@@ -14,6 +14,9 @@ import java.util.List;
 
 public class HighscoreActivity extends Activity {
 
+    private Firebase_t mFirebase = new Firebase_t();
+    private List<Score> mListHighscores = mFirebase.getScores();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -22,11 +25,8 @@ public class HighscoreActivity extends Activity {
 
         TextView lsScores   = findViewById(R.id.tvHighscore);
         Database db         = new Database(this);
+        mListHighscores = mFirebase.getScores();
 
-        List<Score> mListHighscores;
-
-        //mListHighscores                 = db.getAll();
-        mListHighscores                 = new Firebase_t().getScores();
         StringBuilder lsScoreString     = new StringBuilder();
 
         for(int i = 0; i < mListHighscores.size(); i++){

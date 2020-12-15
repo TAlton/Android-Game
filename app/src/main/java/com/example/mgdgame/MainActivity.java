@@ -11,6 +11,8 @@ package com.example.mgdgame;
 //entryPoint
 public class MainActivity extends Activity {
 
+    private Firebase_t mFirebase = new Firebase_t(); //starts initial connection
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -20,10 +22,14 @@ public class MainActivity extends Activity {
 
     }
     public void startGame(View argView){
+
         startActivity(new Intent(MainActivity.this, GameActivity.class));
+
     }
     public void highScores(View argView){
+
         startActivity(new Intent(MainActivity.this, HighscoreActivity.class));
+        finish();
     }
 
 }

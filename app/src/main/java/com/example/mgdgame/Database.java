@@ -94,4 +94,5 @@ class Score {
 
     public float getScore() { return this.SCORE_VALUE; }
     public String getUsername() { return this.USERNAME; }
+
 }

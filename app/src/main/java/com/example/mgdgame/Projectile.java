@@ -3,7 +3,6 @@ package com.example.mgdgame;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import androidx.core.content.ContextCompat;
@@ -11,18 +10,19 @@ import androidx.core.content.ContextCompat;
 public class Projectile extends DrawableEntity {
 
     private boolean mActive             = false;
-    private final float mProjSpeed      = 15f;
-    private final int mWidth            = 5;
-    private final int mHeight           = 15;
+    private float mProjSpeed            = 0f;
+    private final int WIDTH             = 5;
+    private final int HEIGHT            = 15;
     private Vector3 mDirection;
 
-    Projectile(Context argContext, float argPosX, float argPosY){
+    Projectile(Context argContext, float argPosX, float argPosY, float argProjSpeed){
 
         this.mPosX      = argPosX;
         this.mPosY      = argPosY;
+        this.mProjSpeed = argProjSpeed;
         this.mPaint     = new Paint();
         this.mFaction   = eFaction.DEFAULT;
-        this.mRect      = new RectF(mPosX - mWidth, mPosY - mHeight, mPosX + mWidth, mPosY + mHeight);
+        this.mRect      = new RectF(mPosX - WIDTH, mPosY - HEIGHT, mPosX + WIDTH, mPosY + HEIGHT);
 
     }
     @Override
@@ -35,14 +35,14 @@ public class Projectile extends DrawableEntity {
     @Override
     public void update(float argDT) {
 
-        this.mPosY += mDirection.y * mProjSpeed;
+        this.mPosY += mDirection.y * (mProjSpeed * argDT);
         updateRect();
 
     }
     @Override
     protected void updateRect() {
 
-        this.mRect = new RectF(mPosX - mWidth, mPosY - mHeight, mPosX + mWidth, mPosY + mHeight);
+        this.mRect = new RectF(mPosX - WIDTH, mPosY - HEIGHT, mPosX + WIDTH, mPosY + HEIGHT);
 
     }
     public void Enable(Context argContext){ //always enable after initialising
@@ -69,8 +69,8 @@ public class Projectile extends DrawableEntity {
     public void setDirection(Vector3 argV3)     {this.mDirection = argV3;}
     public boolean isOutsideDisplay(int argWidth, int argHeight) {
 
-        return (this.mPosY - mHeight) >= argHeight ||
-                (this.mPosY + mHeight) <= 0;
+        return (this.mPosY - HEIGHT) >= argHeight ||
+                (this.mPosY + HEIGHT) <= 0;
 
     }
 }
