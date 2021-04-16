@@ -1,3 +1,5 @@
 # MGDGame
 
-Android game utilising gyroscope and accelerometer and firebase / SQLite data storage
+Android game utilising gyroscope and accelerometer
+
+Firebase / SQLite data persistence
